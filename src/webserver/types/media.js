@@ -7,7 +7,7 @@ function mediaBehaviorSpec() {
 function mediaModeOptionValues() {
   var spec = cardContractOptionSpec("media", "media_mode");
   return spec && spec.values ? spec.values.slice() :
-    ["play_pause", "previous", "next", "volume", "position", "now_playing"];
+    ["play_pause", "previous", "next", "volume", "position", "now_playing", "control_modal"];
 }
 
 function mediaDefaultMode() {
@@ -59,6 +59,7 @@ var MEDIA_CARD_METADATA = {
       ["volume", "Volume Button"],
       ["position", "Track Position"],
       ["now_playing", "Now Playing"],
+      ["control_modal", "Media Control Modal"],
     ],
     value: function (b) {
       return mediaEditorValidMode(b.sensor);
@@ -133,6 +134,7 @@ registerButtonType("media", {
       if (mode === "volume") return "Volume High";
       if (mode === "position") return "Progress Clock";
       if (mode === "now_playing") return "Music";
+      if (mode === "control_modal") return "Music";
       return "Play Pause";
     }
 
@@ -148,6 +150,7 @@ registerButtonType("media", {
       if (mode === "next") return "Next";
       if (mode === "volume") return "Volume";
       if (mode === "play_pause") return "Play/Pause";
+      if (mode === "control_modal") return "Media Control";
       return "";
     }
 
@@ -354,6 +357,7 @@ registerButtonType("media", {
       if (value === "volume") return { mode: "volume", label: "Volume", icon: "volume-high" };
       if (value === "position") return { mode: "position", label: "Position", icon: "progress-clock" };
       if (value === "now_playing") return { mode: "now_playing", label: "Now Playing", icon: "music" };
+      if (value === "control_modal") return { mode: "control_modal", label: "Media Control", icon: "music" };
       return { mode: "play_pause", label: "Play/Pause", icon: "play-pause" };
     }
     var info = modeInfo(mediaEditorValidMode(b.sensor));

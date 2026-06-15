@@ -717,7 +717,7 @@
           "name": "media_mode",
           "label": "Type",
           "kind": "choice",
-          "values": ["play_pause", "previous", "next", "volume", "position", "now_playing"],
+          "values": ["play_pause", "previous", "next", "volume", "position", "now_playing", "control_modal"],
           "defaultValue": "play_pause"
         },
         {

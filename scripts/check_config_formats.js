@@ -361,7 +361,7 @@ assert.strictEqual(hooks.internalRelayDefaultIcon("push"), "Gesture Tap", "inter
 assert.strictEqual(hooks.internalRelayDefaultOnIcon(), "Lightbulb", "internal relay on icon is spec-backed");
 assert.deepStrictEqual(
   Array.from(hooks.mediaModeOptionValues()),
-  ["play_pause", "previous", "next", "volume", "position", "now_playing"],
+  ["play_pause", "previous", "next", "volume", "position", "now_playing", "control_modal"],
   "media mode options are spec-backed"
 );
 assert.strictEqual(hooks.mediaEditorMode("controls"), "play_pause", "legacy media controls mode maps through spec");
@@ -1474,6 +1474,17 @@ assertButtonRoundTrip(hooks, "media now playing play pause control", {
   unit: "",
   type: "media",
   precision: "play_pause",
+}, false);
+
+assertButtonRoundTrip(hooks, "media control modal card", {
+  entity: "media_player.living_room",
+  label: "Living Room",
+  icon: "Auto",
+  icon_on: "Auto",
+  sensor: "control_modal",
+  unit: "",
+  type: "media",
+  precision: "",
 }, false);
 
 assertButtonRoundTrip(hooks, "climate card", {
