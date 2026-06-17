@@ -233,6 +233,8 @@ var GARAGE_LABEL_DISPLAY_OPTION = "label_display";
 var CLIMATE_LABEL_DISPLAY_OPTION = "label_display";
 var CLIMATE_NUMBER_DISPLAY_OPTION = "number_display";
 var MEDIA_VOLUME_MAX_OPTION = "volume_max";
+var MEDIA_LABEL_DISPLAY_OPTION = "label_display";
+var MEDIA_NUMBER_DISPLAY_OPTION = "number_display";
 var SUBPAGE_KIND_OPTION = "subpage_kind";
 var IMAGE_LABEL_OPTION = "image_label";
 var IMAGE_ICON_OPTION = "image_icon";
@@ -352,14 +354,75 @@ function normalizeMediaVolumeMax(value) {
 
 function normalizeMediaOptions(options, mode) {
   mode = mediaEditorMode(mode);
-  if (mode !== "volume" && mode !== "position") return "";
+  if (mode !== "volume" && mode !== "position" && mode !== "control_modal") return "";
   var out = "";
   var maxVolume = normalizeMediaVolumeMax(configOptionValue(options, MEDIA_VOLUME_MAX_OPTION));
   if (mode === "volume" && maxVolume !== "100") {
     out = setConfigOptionValue(out, MEDIA_VOLUME_MAX_OPTION, maxVolume);
   }
-  out = copyLargeNumbersOption(out, options);
+  if (mode === "control_modal") {
+    var labelMode = normalizeMediaLabelDisplayMode(
+      configOptionValue(options, MEDIA_LABEL_DISPLAY_OPTION));
+    var numberMode = normalizeMediaNumberDisplayMode(
+      configOptionValue(options, MEDIA_NUMBER_DISPLAY_OPTION));
+    if (labelMode !== "label") {
+      out = setConfigOptionValue(out, MEDIA_LABEL_DISPLAY_OPTION, labelMode);
+    }
+    if (numberMode !== "icon") {
+      out = setConfigOptionValue(out, MEDIA_NUMBER_DISPLAY_OPTION, numberMode);
+    }
+  } else {
+    out = copyLargeNumbersOption(out, options);
+  }
   return out;
+}
+
+function normalizeMediaLabelDisplayMode(value) {
+  value = String(value || "").trim();
+  var spec = cardContractOptionSpec("media", MEDIA_LABEL_DISPLAY_OPTION);
+  var values = spec && spec.values ? spec.values : ["label", "status"];
+  return values.indexOf(value) >= 0 ? value : "label";
+}
+
+function normalizeMediaNumberDisplayMode(value) {
+  value = String(value || "").trim();
+  var spec = cardContractOptionSpec("media", MEDIA_NUMBER_DISPLAY_OPTION);
+  var values = spec && spec.values ? spec.values : ["icon", "volume"];
+  return values.indexOf(value) >= 0 ? value : "icon";
+}
+
+function mediaLabelDisplayMode(b) {
+  return normalizeMediaLabelDisplayMode(
+    configOptionValue(b && b.options, MEDIA_LABEL_DISPLAY_OPTION));
+}
+
+function setMediaLabelDisplayMode(b, mode) {
+  if (!b) return "";
+  var normalized = normalizeMediaLabelDisplayMode(mode);
+  b.options = setConfigOptionValue(
+    b.options,
+    MEDIA_LABEL_DISPLAY_OPTION,
+    normalized === "label" ? "" : normalized
+  );
+  b.options = normalizeMediaOptions(b.options, b.sensor);
+  return b.options;
+}
+
+function mediaNumberDisplayMode(b) {
+  return normalizeMediaNumberDisplayMode(
+    configOptionValue(b && b.options, MEDIA_NUMBER_DISPLAY_OPTION));
+}
+
+function setMediaNumberDisplayMode(b, mode) {
+  if (!b) return "";
+  var normalized = normalizeMediaNumberDisplayMode(mode);
+  b.options = setConfigOptionValue(
+    b.options,
+    MEDIA_NUMBER_DISPLAY_OPTION,
+    normalized === "icon" ? "" : normalized
+  );
+  b.options = normalizeMediaOptions(b.options, b.sensor);
+  return b.options;
 }
 
 function imageRefreshIntervalValues() {

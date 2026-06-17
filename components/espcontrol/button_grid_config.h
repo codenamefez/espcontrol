@@ -391,14 +391,24 @@ inline int normalize_media_volume_max_percent(const std::string &value) {
 
 inline std::string media_card_options_normalized(const std::string &options,
                                                  const std::string &mode) {
-  if (mode != "volume" && mode != "position") return "";
+  if (mode != "volume" && mode != "position" && mode != "control_modal") return "";
   std::string out;
   int max_pct = normalize_media_volume_max_percent(
     cfg_option_value(options, "volume_max"));
   if (mode == "volume" && max_pct < 100) {
     out = "volume_max=" + std::to_string(max_pct);
   }
-  append_large_numbers_option(out, options);
+  if (mode == "control_modal") {
+    if (cfg_option_value(options, "label_display") == "status") {
+      out = "label_display=status";
+    }
+    if (cfg_option_value(options, "number_display") == "volume") {
+      if (!out.empty()) out += ",";
+      out += "number_display=volume";
+    }
+  } else {
+    append_large_numbers_option(out, options);
+  }
   return out;
 }
 
@@ -1057,6 +1067,16 @@ inline int media_volume_max_percent(const ParsedCfg &p) {
   return p.type == "media" && p.sensor == "volume"
     ? normalize_media_volume_max_percent(cfg_option_value(p.options, "volume_max"))
     : 100;
+}
+
+inline bool media_control_card_show_status_label(const ParsedCfg &p) {
+  return p.type == "media" && p.sensor == "control_modal" &&
+         cfg_option_value(p.options, "label_display") == "status";
+}
+
+inline bool media_control_card_show_volume_number(const ParsedCfg &p) {
+  return p.type == "media" && p.sensor == "control_modal" &&
+         cfg_option_value(p.options, "number_display") == "volume";
 }
 
 inline std::string action_card_state_entity(const ParsedCfg &p) {

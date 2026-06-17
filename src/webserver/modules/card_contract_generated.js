@@ -903,6 +903,26 @@ var CARD_CONTRACT_CARDS = {
         "defaultValue": "100"
       },
       {
+        "name": "label_display",
+        "label": "Label Display",
+        "kind": "choice",
+        "values": [
+          "label",
+          "status"
+        ],
+        "defaultValue": "label"
+      },
+      {
+        "name": "number_display",
+        "label": "Top Left Display",
+        "kind": "choice",
+        "values": [
+          "icon",
+          "volume"
+        ],
+        "defaultValue": "icon"
+      },
+      {
         "name": "large_numbers",
         "label": "Large Media Numbers",
         "kind": "flag"

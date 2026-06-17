@@ -91,6 +91,22 @@ var MEDIA_CARD_METADATA = {
       ["play_pause", "Play/Pause"],
     ],
   },
+  controlLabelDisplay: {
+    label: "Label",
+    inputId: "media-control-label-display",
+    options: [
+      ["label", "Label"],
+      ["status", "State"],
+    ],
+  },
+  controlNumberDisplay: {
+    label: "Top Left",
+    inputId: "media-control-number-display",
+    options: [
+      ["icon", "Icon"],
+      ["volume", "Volume"],
+    ],
+  },
   largeNumbers: {
     label: "Large Media Numbers",
     idSuffix: "large-media-numbers",
@@ -237,6 +253,9 @@ registerButtonType("media", {
         helpers.saveField("icon", b.icon);
       }
     }
+    if (b.sensor === "control_modal" && !b.label) {
+      b.label = "Media Control";
+    }
     if (b.sensor === "play_pause" && b.icon !== "Auto") {
       b.icon = "Auto";
       helpers.saveField("icon", b.icon);
@@ -306,7 +325,36 @@ registerButtonType("media", {
       }
     }
 
+    if (b.sensor === "control_modal") {
+      var labelDisplay = helpers.renderCardSegmentControl(panel, b, helpers, {
+        segment: Object.assign({}, MEDIA_CARD_METADATA.controlLabelDisplay, {
+          inputId: helpers.idPrefix + "media-control-label-display",
+          value: function () { return mediaLabelDisplayMode(b); },
+          onSelect: function (button, cardHelpers, value) {
+            setMediaLabelDisplayMode(button, value);
+            cardHelpers.saveField("options", button.options);
+            renderButtonSettings();
+          },
+        }),
+      });
+      labelDisplay.segment.classList.add("sp-segment-scroll");
+
+      var numberDisplay = helpers.renderCardSegmentControl(panel, b, helpers, {
+        segment: Object.assign({}, MEDIA_CARD_METADATA.controlNumberDisplay, {
+          inputId: helpers.idPrefix + "media-control-number-display",
+          value: function () { return mediaNumberDisplayMode(b); },
+          onSelect: function (button, cardHelpers, value) {
+            setMediaNumberDisplayMode(button, value);
+            cardHelpers.saveField("options", button.options);
+            renderButtonSettings();
+          },
+        }),
+      });
+      numberDisplay.segment.classList.add("sp-segment-scroll");
+    }
+
     if (b.sensor !== "now_playing" &&
+        b.sensor !== "control_modal" &&
         (b.sensor !== "play_pause" || b.precision !== "state") &&
         (b.sensor !== "position" || b.precision !== "state")) {
       helpers.renderCardTextField(panel, b, helpers, {
@@ -363,6 +411,15 @@ registerButtonType("media", {
     var info = modeInfo(mediaEditorValidMode(b.sensor));
     var mode = info.mode;
     var label = (b.label && b.label.trim()) || info.label;
+    if (mode === "control_modal") {
+      return {
+        iconHtml: mediaNumberDisplayMode(b) === "volume"
+          ? cardSensorPreviewHtml(b, helpers, "42", null)
+          : '<span class="sp-btn-icon mdi mdi-' + (b.icon && b.icon !== "Auto" ? iconSlug(b.icon) : info.icon) + '"></span>',
+        labelHtml: cardBadgeLabelHtml(helpers, mediaLabelDisplayMode(b) === "status" ? "Playing" : label,
+          MEDIA_CARD_METADATA.preview.badge),
+      };
+    }
     if (mode === "volume") {
       return {
         iconHtml: cardSensorPreviewHtml(b, helpers, "42", null),
