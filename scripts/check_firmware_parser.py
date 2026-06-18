@@ -21,6 +21,7 @@ DEVICES_DIR = ROOT / "devices"
 
 
 CPP_SOURCE = r'''
+#include <algorithm>
 #include <cassert>
 #include <cmath>
 #include <cstdint>
