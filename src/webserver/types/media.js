@@ -48,6 +48,21 @@ function mediaNowPlayingPlayPauseEnabled(b) {
   return mediaNowPlayingControls(b) === "play_pause";
 }
 
+function mediaLabelIsGenerated(label) {
+  label = String(label || "").trim();
+  return !label || [
+    "Media",
+    "Play/Pause",
+    "Previous",
+    "Skip Previous",
+    "Next",
+    "Skip Next",
+    "Volume",
+    "Position",
+    "Now Playing",
+  ].indexOf(label) >= 0;
+}
+
 var MEDIA_CARD_METADATA = {
   mode: {
     label: "Type",
@@ -253,8 +268,9 @@ registerButtonType("media", {
         helpers.saveField("icon", b.icon);
       }
     }
-    if (b.sensor === "control_modal" && !b.label) {
+    if (b.sensor === "control_modal" && mediaLabelIsGenerated(b.label)) {
       b.label = "Media Control";
+      helpers.saveField("label", b.label);
     }
     if (b.sensor === "play_pause" && b.icon !== "Auto") {
       b.icon = "Auto";
