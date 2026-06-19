@@ -223,6 +223,10 @@ registerButtonType("media", {
             b.icon = "Auto";
             helpers.saveField("icon", b.icon);
           }
+          if (b.sensor === "control_modal" && mediaLabelIsGenerated(b.label)) {
+            b.label = mediaActionLabel(b.sensor);
+            helpers.saveField("label", b.label);
+          }
           var normalizedOptions = normalizeMediaOptions(b.options, b.sensor);
           if (b.options !== normalizedOptions) {
             b.options = normalizedOptions;
